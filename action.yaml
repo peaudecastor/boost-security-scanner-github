@@ -1,0 +1,33 @@
+name: 'Boost Security Scanner'
+description: 'Scans a repository for security vulneratibilities'
+inputs:
+  api_endpoint:
+    description: Boost API endpoint
+    required: true
+    default: https://api.boostsecurity.io
+  api_token:
+    description: Boost API token
+    required: true
+  additional_args:
+    description: Additional CLI arguments to pass
+    required: false
+    default: ''
+  scanner_image:
+    description: Boost Security scanner docker image
+    required: true
+    default: 706352083976.dkr.ecr.us-east-2.amazonaws.com/scanner
+  scanner_version:
+    description: Boost Security scanner docker image tag
+    required: true
+    default: '1.1'
+runs:
+  using: 'composite'
+  steps:
+    - run: ${{ github.action_path }}/scan.sh
+      shell: bash
+      env:
+        BOOST_API_ENDPOINT: ${{ inputs.api_endpoint }}
+        BOOST_API_TOKEN: ${{ inputs.api_token }}
+        INPUT_ADDITIONAL_ARGS: ${{ inputs.additional_args }}
+        INPUT_SCANNER_IMAGE: ${{ inputs.scanner_image }}
+        INPUT_SCANNER_VERSION: ${{ inputs.scanner_version }}
