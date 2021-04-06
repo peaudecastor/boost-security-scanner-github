@@ -174,7 +174,13 @@ main ()
   declare BOOST_WORK_DIR=${GITHUB_WORKSPACE}
 
   if [ "${GITHUB_EVENT_NAME:-}" == "pull_request" ]; then
-    export BOOST_GIT_PULL_REQUEST="enabled"
+    wget -q -O /tmp/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+    chmod 755 /tmp/jq
+
+    export BOOST_GIT_PULL_REQUEST=$(/tmp/jq -r .number ${GITHUB_EVENT_PATH})
+    BOOST_BASE_REVISION=$(/tmp/jq -r .pull_request.base.sha ${GITHUB_EVENT_PATH})
+    BOOST_HEAD_REVISION=$(/tmp/jq -r .pull_request.head.sha ${GITHUB_EVENT_PATH})
+    BOOST_BRANCH_NAME=$(/tmp/jq -r .pull_request.head.ref ${GITHUB_EVENT_PATH})
   fi
 
   main.run
