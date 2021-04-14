@@ -134,7 +134,7 @@ main.run ()
   else
     if $(git rev-parse --is-shallow-repository); then
       log.info "Shallow repository detected, fetching additional commits"
-      git fetch --deepen=1
+      git fetch --deepen=2
     fi
   fi
 
