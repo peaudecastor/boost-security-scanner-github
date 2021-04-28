@@ -126,12 +126,12 @@ main.run ()
   if [ -n "${baseref:-}" ]; then
     if $(git rev-parse --is-shallow-repository); then
       log.info "Shallow repository detected, fetching since ${baseref}"
-      git fetch --negotiation-tip=${baseref} origin "${headref}:${headref}"
+      git fetch --negotiation-tip="${baseref}" origin "${headref}:${headref}"
     fi
   else
     if $(git rev-parse --is-shallow-repository); then
       log.info "Shallow repository detected, fetching additional commits"
-      git fetch --deepen=2
+      git fetch --deepen=2 origin "${headref}"
     fi
   fi
 
