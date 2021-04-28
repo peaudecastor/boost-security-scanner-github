@@ -124,17 +124,14 @@ main.run ()
   log.info "Initializing"
 
   if [ -n "${baseref:-}" ]; then
-    log.info "Base branch detected, fetching ${baseref}"
-    git fetch --force origin "${baseref}:${baseref}"
-
     if $(git rev-parse --is-shallow-repository); then
-      log.info "Shallow repository detected, fetching complete tree"
-      git fetch --unshallow
+      log.info "Shallow repository detected, fetching since ${baseref}"
+      git fetch --negotiation-tip="${baseref}" origin "${headref}:${headref}"
     fi
   else
     if $(git rev-parse --is-shallow-repository); then
       log.info "Shallow repository detected, fetching additional commits"
-      git fetch --deepen=2
+      git fetch --deepen=2 origin "${headref}"
     fi
   fi
 
