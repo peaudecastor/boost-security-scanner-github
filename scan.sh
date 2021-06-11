@@ -63,19 +63,12 @@ main.exit ()
 main.run ()
 {
   #
-  # Create docker env file
+  # Build docker container
   #
   tmp.create env
   ENV_FILE="${tmp_file}"
   unset tmp_file
 
-  while read name; do
-    echo "${name}=${!name:-}" >> "${ENV_FILE}"
-  done < <(env.list.boost)
-
-  #
-  # Build docker container
-  #
   tmp.create cid
   CID_FILE="${tmp_file}"
   unset tmp_file
@@ -88,45 +81,23 @@ main.run ()
     --env-file "${ENV_FILE}"
     --entrypoint boost
     --rm
+    --tty
     "${BOOST_SCANNER_IMAGE}:${BOOST_SCANNER_VERSION}"
+    ${INPUT_SCANNER_COMMAND}
   )
 
-  CREATE_ARGS+=(scan ci "${BOOST_PROJECT_SLUG}")
-  CREATE_ARGS+=("${BOOST_BRANCH_NAME}")
-
+  log.info "Initializing"
   declare scanref
   declare headref=${BOOST_HEAD_REVISION}
   declare baseref=${BOOST_BASE_REVISION:-}
 
-  if [ -n "${baseref}" ]; then
-    scanref="${baseref}..${headref}"
-  else
-    scanref="${headref}"
-  fi
-
-  CREATE_ARGS+=("${scanref}")
-
-  if [ -n "${BOOST_MAIN_BRANCH:-}" ]; then
-    CREATE_ARGS+=(--main-branch "${BOOST_MAIN_BRANCH}")
-  fi
-
-  if [ -n "${BOOST_PR_NUMBER:-}" ] &&
-     [ "${BOOST_PR_NUMBER}" != "false" ];
-  then
-    CREATE_ARGS+=(--pull-request "${BOOST_PR_NUMBER}")
-  fi
-
-  CREATE_ARGS+=(${BOOST_CLI_ARGUMENTS:-})
-
-  #
-  # Launch containers
-  #
-  log.info "Initializing"
-
   if [ -n "${baseref:-}" ]; then
+    log.info "Fetching pull request base commit"
+    git fetch --depth=1 origin "${baseref}"
+    baseref=$(git rev-parse FETCH_HEAD)
+    git fetch --filter=blob:none origin "${headref}"
     if $(git rev-parse --is-shallow-repository); then
-      log.info "Shallow repository detected, fetching since ${baseref}"
-      git fetch --negotiation-tip="${baseref}" origin "${headref}:${headref}"
+      git fetch --negotiation-tip=${baseref} --no-tags --unshallow origin "${headref}"
     fi
   else
     if $(git rev-parse --is-shallow-repository); then
@@ -135,9 +106,28 @@ main.run ()
     fi
   fi
 
+  if [ -n "${baseref}" ]; then
+    scanref="${headref}..${baseref}"
+  else
+    scanref="${headref}"
+  fi
+
+  CREATE_ARGS+=(${BOOST_CLI_ARGUMENTS:-})
+  CREATE_ARGS+=("${scanref}")
+
+  #
+  # Create docker env file
+  #
+  while read name; do
+    echo "${name}=${!name:-}" >> "${ENV_FILE}"
+  done < <(env.list.boost)
+
+  #
+  # Launch containers
+  #
   log.info "Creating docker container"
   docker pull "${BOOST_SCANNER_IMAGE}:${BOOST_SCANNER_VERSION}"
-  docker "${CREATE_ARGS[@]}"
+  docker ${CREATE_ARGS[@]}
   CONTAINER_ID=$(cat "${CID_FILE}")
   docker cp "." "${CONTAINER_ID}:/app/mount/"
 
@@ -160,24 +150,22 @@ main ()
   export BOOST_API_ENDPOINT=${BOOST_API_ENDPOINT:-${INPUT_API_ENDPOINT:-}}
   export BOOST_API_TOKEN=${BOOST_API_TOKEN:-${INPUT_API_TOKEN:-}}
 
-  declare BOOST_SCANNER_IMAGE=${INPUT_SCANNER_IMAGE}
-  declare BOOST_SCANNER_VERSION=${INPUT_SCANNER_VERSION}
-  declare BOOST_CLI_ARGUMENTS=${INPUT_ADDITIONAL_ARGS:-}
+  export BOOST_SCANNER_IMAGE=${INPUT_SCANNER_IMAGE}
+  export BOOST_SCANNER_VERSION=${INPUT_SCANNER_VERSION}
+  export BOOST_CLI_ARGUMENTS=${INPUT_ADDITIONAL_ARGS:-}
 
-  declare BOOST_BRANCH_NAME=${GITHUB_REF#refs/heads/}
-  declare BOOST_PROJECT_SLUG=${GITHUB_REPOSITORY}
-  declare BOOST_BASE_REVISION=${GITHUB_BASE_REF:-}
-  declare BOOST_HEAD_REVISION=${GITHUB_SHA}
-  declare BOOST_WORK_DIR=${GITHUB_WORKSPACE}
+  export BOOST_GIT_BRANCH=${GITHUB_REF#refs/heads/}
+  export BOOST_GIT_PROJECT=${GITHUB_REPOSITORY}
+  export BOOST_GIT_REPOSITORY=/app/mount
+  export BOOST_BASE_REVISION=${GITHUB_BASE_REF:-}
+  export BOOST_HEAD_REVISION=${GITHUB_SHA}
+  export BOOST_WORK_DIR=${GITHUB_WORKSPACE}
 
   if [ "${GITHUB_EVENT_NAME:-}" == "pull_request" ]; then
-    wget -q -O /tmp/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
-    chmod 755 /tmp/jq
-
-    export BOOST_GIT_PULL_REQUEST=$(/tmp/jq -r .number ${GITHUB_EVENT_PATH})
-    BOOST_BASE_REVISION=$(/tmp/jq -r .pull_request.base.sha ${GITHUB_EVENT_PATH})
-    BOOST_HEAD_REVISION=$(/tmp/jq -r .pull_request.head.sha ${GITHUB_EVENT_PATH})
-    BOOST_BRANCH_NAME=$(/tmp/jq -r .pull_request.head.ref ${GITHUB_EVENT_PATH})
+    export BOOST_GIT_PULL_REQUEST=$(jq -r .number ${GITHUB_EVENT_PATH})
+    BOOST_BASE_REVISION=$(jq -r .pull_request.base.sha ${GITHUB_EVENT_PATH})
+    BOOST_HEAD_REVISION=$(jq -r .pull_request.head.sha ${GITHUB_EVENT_PATH})
+    BOOST_GIT_BRANCH=$(jq -r .pull_request.head.ref ${GITHUB_EVENT_PATH})
   fi
 
   main.run

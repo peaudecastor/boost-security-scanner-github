@@ -12,6 +12,10 @@ inputs:
     description: Additional CLI arguments to pass
     required: false
     default: ''
+  scanner_command:
+    description: Boost Security scanner command
+    required: true
+    default: scan ci
   scanner_image:
     description: Boost Security scanner docker image
     required: true
@@ -19,7 +23,7 @@ inputs:
   scanner_version:
     description: Boost Security scanner docker image tag
     required: true
-    default: '1.1'
+    default: '2.0'
 runs:
   using: 'composite'
   steps:
@@ -29,5 +33,6 @@ runs:
         BOOST_API_ENDPOINT: ${{ inputs.api_endpoint }}
         BOOST_API_TOKEN: ${{ inputs.api_token }}
         INPUT_ADDITIONAL_ARGS: ${{ inputs.additional_args }}
+        INPUT_SCANNER_COMMAND: ${{ inputs.scanner_command }}
         INPUT_SCANNER_IMAGE: ${{ inputs.scanner_image }}
         INPUT_SCANNER_VERSION: ${{ inputs.scanner_version }}

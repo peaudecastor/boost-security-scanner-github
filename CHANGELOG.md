@@ -2,7 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/1.0.2..HEAD)
+## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/2.0.0..HEAD)
+
+## 2.0.0 - 2021-06-11 - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/1.0.2..2.0.0)
+
+- Updates boost scanner 2.0.0 release
+- Updates docker with --tty for colors
 
 ## 1.0.2 - 2021-04-28 - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/1.0.1..1.0.2)
 

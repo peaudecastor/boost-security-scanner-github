@@ -35,7 +35,7 @@ jobs:
           username: ${{ secrets.AWS_ACCESS_KEY_ID }}
           password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Scan Repository
-        uses: peaudecastor/boost-security-scanner-github@1.0
+        uses: peaudecastor/boost-security-scanner-github@2.0
         with:
           api_token: ${{ secrets.BOOST_API_TOKEN }}
 ```
@@ -56,6 +56,11 @@ The Boost Security API token secret.
 
 **NOTE**: We recommend you not put the API token directly in your pipeline.yml
 file. Instead, it should be exposed via a **secret**.
+
+### `scanner_command` (Optional, string)
+
+The Boost CLI command to run.
+This defaults to `scan ci`.
 
 ### `scanner_image` (Optional, string)
 
