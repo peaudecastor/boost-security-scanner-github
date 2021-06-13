@@ -104,8 +104,6 @@ main.run ()
     scanref="${headref}"
   fi
 
-  CREATE_ARGS+=("${scanref}")
-
   if [ -n "${BOOST_MAIN_BRANCH:-}" ]; then
     CREATE_ARGS+=(--main-branch "${BOOST_MAIN_BRANCH}")
   fi
@@ -117,6 +115,8 @@ main.run ()
   fi
 
   CREATE_ARGS+=(${BOOST_CLI_ARGUMENTS:-})
+  
+  CREATE_ARGS+=("${scanref}")
 
   #
   # Launch containers
