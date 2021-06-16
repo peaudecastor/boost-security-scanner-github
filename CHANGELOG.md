@@ -2,7 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/2.0.0..HEAD)
+## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/2.0.1..HEAD)
+
+## 2.0.1 - 2021-06-16 - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/2.0.0..2.0.1)
+
+- Updates hook internals
+- Add boost cli
+- Add new 'action' key to support 'exec' mode and partial scans
+- Add new 'exec\_command' key
 
 ## 2.0.0 - 2021-06-11 - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/1.0.2..2.0.0)
 

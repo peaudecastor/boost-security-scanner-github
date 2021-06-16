@@ -1,38 +1,51 @@
-name: 'Boost Security Scanner'
-description: 'Scans a repository for security vulneratibilities'
+name: "Boost Security Scanner"
+description: "Scans a repository for security vulneratibilities"
 inputs:
+  action:
+    description: "Action to perform, one of: exec, scan or complete"
+    required: true
+    default: scan
+  additional_args:
+    description: "Additional CLI arguments to pass"
+    required: false
+    default: ""
   api_endpoint:
-    description: Boost API endpoint
+    description: "Boost API endpoint"
     required: true
     default: https://api.boostsecurity.io
   api_token:
-    description: Boost API token
+    description: "Boost API token"
     required: true
-  additional_args:
-    description: Additional CLI arguments to pass
-    required: false
-    default: ''
+  cli_version:
+    description: "Boost Security cli version"
+    default: "2.0"
+  exec_command:
+    description: "Command to run when in exec mode"
+    default: ""
   scanner_command:
-    description: Boost Security scanner command
+    description: "Boost Security scanner command"
     required: true
-    default: scan ci
+    default: "scan ci"
   scanner_image:
-    description: Boost Security scanner docker image
+    description: "Boost Security scanner docker image"
     required: true
-    default: 706352083976.dkr.ecr.us-east-2.amazonaws.com/scanner
+    default: "706352083976.dkr.ecr.us-east-2.amazonaws.com/scanner"
   scanner_version:
-    description: Boost Security scanner docker image tag
+    description: "Boost Security scanner docker image tag"
     required: true
-    default: '2.0'
+    default: "2.0"
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - run: ${{ github.action_path }}/scan.sh
       shell: bash
       env:
         BOOST_API_ENDPOINT: ${{ inputs.api_endpoint }}
         BOOST_API_TOKEN: ${{ inputs.api_token }}
+        INPUT_ACTION: ${{ inputs.action }}
+        INPUT_CLI_VERSION: ${{ inputs.cli_version }}
         INPUT_ADDITIONAL_ARGS: ${{ inputs.additional_args }}
+        INPUT_EXEC_COMMAND: ${{ inputs.exec_command }}
         INPUT_SCANNER_COMMAND: ${{ inputs.scanner_command }}
         INPUT_SCANNER_IMAGE: ${{ inputs.scanner_image }}
         INPUT_SCANNER_VERSION: ${{ inputs.scanner_version }}

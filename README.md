@@ -42,9 +42,19 @@ jobs:
 
 ## Configuration
 
+### `action` (Required, string)
+
+The action to perform by the plugin:
+- `scan`: Executes the BoostSecurity native scanner with a number of plugins
+- `exec`: Executes a custom command which outputs Sarif to stdout.
+- `complete`: Completes a Scan when in `partial` mode.
+
 ### `additional_args` (Optional, str)
 
 Additional CLI args to pass to the `boost` cli.
+
+Optional arguments:
+- `--partial`: Enables partial mode, allowing you to combine the results of multiple scans.
 
 ### `api_endpoint` (Optional, string)
 
@@ -56,6 +66,12 @@ The Boost Security API token secret.
 
 **NOTE**: We recommend you not put the API token directly in your pipeline.yml
 file. Instead, it should be exposed via a **secret**.
+
+### `exec_command` (Optional, string)
+
+A custom command to run in by the `exec` action. This should be a command which executes a custom scanner and outputs only a Sarif document to stdout.
+
+The value may additionally contain the `%CWD%` placeholder which will be replaced by the correct working directory during evaluation. The is especially useful when combined with volume mounts in a docker command.
 
 ### `scanner_command` (Optional, string)
 
