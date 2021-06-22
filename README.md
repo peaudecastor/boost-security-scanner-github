@@ -67,16 +67,16 @@ The Boost Security API token secret.
 **NOTE**: We recommend you not put the API token directly in your pipeline.yml
 file. Instead, it should be exposed via a **secret**.
 
+### `cli_version` (Optional, string)
+
+Overrides the cli version to download when performing scans. If undefined,
+this will default to pulling "2.0".
+
 ### `exec_command` (Optional, string)
 
 A custom command to run in by the `exec` action. This should be a command which executes a custom scanner and outputs only a Sarif document to stdout.
 
 The value may additionally contain the `%CWD%` placeholder which will be replaced by the correct working directory during evaluation. The is especially useful when combined with volume mounts in a docker command.
-
-### `scanner_command` (Optional, string)
-
-The Boost CLI command to run.
-This defaults to `scan ci`.
 
 ### `scanner_image` (Optional, string)
 
