@@ -23,15 +23,20 @@ init.config ()
 {
   log.info "initializing configuration"
 
-  export BOOST_API_ENDPOINT=${BOOST_API_ENDPOINT:-${INPUT_API_ENDPOINT:-}}
+  declare api_endpoint="https://api.boostsecurity.io"
+
+  export BOOST_API_ENDPOINT=${BOOST_API_ENDPOINT:-${INPUT_API_ENDPOINT:-api_endpoint}}
   export BOOST_API_TOKEN=${BOOST_API_TOKEN:-${INPUT_API_TOKEN:-}}
 
   export BOOST_SCANNER_IMAGE=${INPUT_SCANNER_IMAGE}
   export BOOST_SCANNER_VERSION=${INPUT_SCANNER_VERSION}
+
+  export BOOST_EXEC_COMMAND=${INPUT_EXEC_COMMAND:-}
+
   export BOOST_CLI_ARGUMENTS=${INPUT_ADDITIONAL_ARGS:-}
   export BOOST_CLI_VERSION=${INPUT_CLI_VERSION}
 
-  export BOOST_CLI_URL=${BOOST_API_ENDPOINT/api/assets}
+  export BOOST_CLI_URL=${BOOST_CLI_URL:-${BOOST_API_ENDPOINT/api/assets}}
          BOOST_CLI_URL=${BOOST_CLI_URL%*/}
 
   if [ -d /lib/apk ]; then
@@ -39,6 +44,8 @@ init.config ()
   else
     BOOST_CLI_URL+="/boost/linux/glibc/amd64/${BOOST_CLI_VERSION}/boost.sh"
   fi
+
+  export DOCKER_COPY_REQUIRED=false
 }
 
 init.cli ()
@@ -74,22 +81,20 @@ main.exec ()
   init.config
   init.cli
 
-  if [ -z "${INPUT_EXEC_COMMAND:-}" ]; then
+  if [ -z "${BOOST_EXEC_COMMAND:-}" ]; then
     log.error "the 'exec_command' option must be defined when in exec mode"
     exit 1
   fi
 
-  exec ${BOOST_EXE} scan exec ${BOOST_CLI_ARGUMENTS:-} --command "${INPUT_EXEC_COMMAND}"
+  exec ${BOOST_EXE} scan exec ${BOOST_CLI_ARGUMENTS:-} --command "${BOOST_EXEC_COMMAND}"
 }
 
 main.scan ()
 {
-  trap 'main.scan.exit' EXIT
-
   init.config
   init.cli
 
-  if [ -n "${INPUT_EXEC_COMMAND:-}" ]; then
+  if [ -n "${BOOST_EXEC_COMMAND:-}" ]; then
     log.error "the 'exec_command' option must only be defined in exec mode"
     exit 1
   fi

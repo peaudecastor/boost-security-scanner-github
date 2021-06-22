@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/2.0.1..HEAD)
+## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/v2.0.2..HEAD)
+
+## v2.0.2 - 2021-06-22 - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/2.0.1..v2.0.2)
+
+- Migrates plugin logic into the boost-cli
 
 ## 2.0.1 - 2021-06-16 - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/2.0.0..2.0.1)
 
