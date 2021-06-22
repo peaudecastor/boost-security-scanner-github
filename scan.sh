@@ -26,8 +26,13 @@ init.config ()
   export BOOST_API_ENDPOINT=${BOOST_API_ENDPOINT:-${INPUT_API_ENDPOINT:-}}
   export BOOST_API_TOKEN=${BOOST_API_TOKEN:-${INPUT_API_TOKEN:-}}
 
+  export DOCKER_COPY_REQUIRED=false
+
   export BOOST_SCANNER_IMAGE=${INPUT_SCANNER_IMAGE}
   export BOOST_SCANNER_VERSION=${INPUT_SCANNER_VERSION}
+
+  export BOOST_EXEC_COMMAND=${INPUT_EXEC_COMMAND:-}
+
   export BOOST_CLI_ARGUMENTS=${INPUT_ADDITIONAL_ARGS:-}
   export BOOST_CLI_VERSION=${INPUT_CLI_VERSION}
 
@@ -74,12 +79,12 @@ main.exec ()
   init.config
   init.cli
 
-  if [ -z "${INPUT_EXEC_COMMAND:-}" ]; then
+  if [ -z "${BOOST_EXEC_COMMAND:-}" ]; then
     log.error "the 'exec_command' option must be defined when in exec mode"
     exit 1
   fi
 
-  exec ${BOOST_EXE} scan exec ${BOOST_CLI_ARGUMENTS:-} --command "${INPUT_EXEC_COMMAND}"
+  exec ${BOOST_EXE} scan exec ${BOOST_CLI_ARGUMENTS:-} --command "${BOOST_EXEC_COMMAND}"
 }
 
 main.scan ()
@@ -89,7 +94,7 @@ main.scan ()
   init.config
   init.cli
 
-  if [ -n "${INPUT_EXEC_COMMAND:-}" ]; then
+  if [ -n "${BOOST_EXEC_COMMAND:-}" ]; then
     log.error "the 'exec_command' option must only be defined in exec mode"
     exit 1
   fi
