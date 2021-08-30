@@ -4,10 +4,11 @@ set -e
 set -o pipefail
 set -u
 
-export BOOST_BIN=${BOOST_BIN:-${TMPDIR:-/tmp}/boost.sh}
-export BOOST_CLI=${BOOST_CLI:-${TMPDIR:-/tmp}/boost-cli}
+export BOOST_TMP_DIR=${BOOST_TMP_DIR:-${WORKSPACE_TMP:-${TMPDIR:-/tmp}}}
+export BOOST_BIN=${BOOST_BIN:-${BOOST_TMP_DIR}/boost.sh}
+export BOOST_CLI=${BOOST_CLI:-${BOOST_TMP_DIR}/boost/cli/latest}
 export BOOST_EXE=${BOOST_EXE:-${BOOST_CLI}/boost.dist/boost}
-export BOOST_ENV=${BOOST_ENV:-${TMPDIR:-/tmp}/boost.env}
+
 
 log.info ()
 { # $@=message
@@ -39,12 +40,6 @@ init.config ()
   export BOOST_CLI_URL=${BOOST_CLI_URL:-${BOOST_API_ENDPOINT/api/assets}}
          BOOST_CLI_URL=${BOOST_CLI_URL%*/}
 
-  if [ -d /lib/apk ]; then
-    BOOST_CLI_URL+="/boost/linux/alpine/amd64/${BOOST_CLI_VERSION}/boost.sh"
-  else
-    BOOST_CLI_URL+="/boost/linux/glibc/amd64/${BOOST_CLI_VERSION}/boost.sh"
-  fi
-
   export DOCKER_COPY_REQUIRED=false
 }
 
@@ -55,14 +50,9 @@ init.cli ()
   fi
 
   log.info "installing cli to ${BOOST_BIN}"
-  curl --silent --output "${BOOST_BIN}" "${BOOST_CLI_URL}"
-  chmod 755 "${BOOST_BIN}"
-
-  if ! "${BOOST_BIN}" version; then
-    log.error "failed downloading cli from ${BOOST_CLI_URL}"
-    exit 1
-  fi
-
+  mkdir -p "${BOOST_TMP_DIR}"
+  declare BOOST_DOWNLOAD_URL=${BOOST_CLI_URL}/boost/get-boost-cli
+  curl --silent "${BOOST_DOWNLOAD_URL}" | bash
 }
 
 main.complete ()
@@ -71,9 +61,6 @@ main.complete ()
   init.cli
 
   ${BOOST_EXE} scan complete
-  ! test -f "${BOOST_BIN:-}" || rm "${BOOST_BIN}"
-  ! test -d "${BOOST_CLI:-}" || rm -rf "${BOOST_CLI}"
-  ! test -f "${BOOST_ENV:-}" || rm "${BOOST_ENV}"
 }
 
 main.exec ()
