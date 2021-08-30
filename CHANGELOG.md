@@ -2,7 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/v2.0.2..HEAD)
+## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/v2.0.3..HEAD)
+
+## v2.0.3 - 2021-08-30 - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/2.0.2..v2.0.3)
+
+- migrate downloader to get-boost-cli
+- migrate cli installation path to tmp\_dir/boost/cli/<version>
 
 ## v2.0.2 - 2021-06-22 - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/2.0.1..v2.0.2)
 
