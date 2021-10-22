@@ -2,7 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/v2.0.3..HEAD)
+## Unreleased - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/v2.0.4..HEAD)
+
+## v2.0.4 - 2021-10-22 - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/2.0.3..v2.0.4)
+
+- fix date formatting
 
 ## v2.0.3 - 2021-08-30 - [Github](https://github.com/peaudecastor/boost-security-scanner-github/compare/2.0.2..v2.0.3)
 
