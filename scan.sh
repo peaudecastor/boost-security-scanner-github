@@ -12,12 +12,12 @@ export BOOST_EXE=${BOOST_EXE:-${BOOST_CLI}/boost.dist/boost}
 
 log.info ()
 { # $@=message
-  printf "$(date +'%H:%m:%S') [\033[34m%s\033[0m] %s\n" "INFO" "${*}";
+  printf "$(date +'%H:%M:%S') [\033[34m%s\033[0m] %s\n" "INFO" "${*}";
 }
 
 log.error ()
 { # $@=message
-  printf "$(date +'%H:%m:%S') [\033[31m%s\033[0m] %s\n" "ERROR" "${*}";
+  printf "$(date +'%H:%M:%S') [\033[31m%s\033[0m] %s\n" "ERROR" "${*}";
 }
 
 init.config ()
